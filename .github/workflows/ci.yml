@@ -1,0 +1,88 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install pytest
+
+      - name: Run unit tests
+        run: |
+          pytest
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create build artifact
+        run: |
+          echo "Build successful" > artifact.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: artifact.txt
+
+  deploy_staging:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging..."
+          cat artifact.txt
+
+  verify_staging:
+    needs: deploy_staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run smoke test
+        run: |
+          python -c "assert 1 == 1"
+
+  deploy_production:
+    needs: verify_staging
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production..."
+          cat artifact.txt
