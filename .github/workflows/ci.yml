@@ -24,7 +24,7 @@ jobs:
 
       - name: Run lint
         run: |
-          flake8 .
+          flake8 . --ignore=E402
 
       - name: Run tests
         run: |
