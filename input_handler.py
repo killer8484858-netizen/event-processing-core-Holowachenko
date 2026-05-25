@@ -1,2 +1,3 @@
 def get_input():
-    return input("Enter number: ")
+    value = input("Enter number: ")
+    return value
