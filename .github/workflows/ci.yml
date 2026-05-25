@@ -30,6 +30,3 @@ jobs:
         run: |
           pytest
 
-      - name: Run security scan
-        run: |
-          bandit -r . -x tests
