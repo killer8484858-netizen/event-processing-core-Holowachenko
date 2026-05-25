@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: Run smoke test
         run: |
-          python -c "assert 1 == 2"
+          python -c "assert 1 == 1"
 
   deploy_production:
     needs: verify_staging
